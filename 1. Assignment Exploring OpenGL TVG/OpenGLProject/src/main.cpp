@@ -53,7 +53,6 @@ bool loadOBJ(const std::string& filePath, std::vector<Vertex>& vertices, std::ve
 
     std::vector<glm::vec3> positions;
     std::vector<glm::vec3> normals;
-    std::map<std::string, int> vertexMap;
 
     std::string line;
     while (std::getline(file, line)) {
@@ -74,40 +73,36 @@ bool loadOBJ(const std::string& filePath, std::vector<Vertex>& vertices, std::ve
             normals.push_back(glm::normalize(glm::vec3(x, y, z)));
         }
         else if (type == "f") {
+            std::vector<std::pair<int, int>> faceData; // (posIndex, normIndex)
             std::string vertex;
-            std::vector<int> faceVertices;
             
             while (iss >> vertex) {
                 int posIndex = 0, normIndex = 0;
+                sscanf(vertex.c_str(), "%d//%d", &posIndex, &normIndex);
                 
-                // Parse vertex/normal format
-                int slashCount = 0;
-                for (char c : vertex) if (c == '/') slashCount++;
-                
-                if (slashCount == 2) {
-                    // Format: v//vn
-                    sscanf(vertex.c_str(), "%d//%d", &posIndex, &normIndex);
-                } else if (slashCount == 1) {
-                    // Format: v/vt or v/vt/vn
-                    sscanf(vertex.c_str(), "%d/%*d/%d", &posIndex, &normIndex);
-                } else {
-                    // Format: v only
-                    sscanf(vertex.c_str(), "%d", &posIndex);
-                }
-                
-                posIndex--; // OBJ indices are 1-based
+                posIndex--;   // Convert to 0-based
                 normIndex--;
                 
-                if (posIndex >= 0 && posIndex < (int)positions.size()) {
-                    Vertex v;
-                    v.position = positions[posIndex];
-                    v.normal = (normIndex >= 0 && normIndex < (int)normals.size()) 
-                        ? normals[normIndex] 
-                        : glm::vec3(0.0f, 1.0f, 0.0f); // Default normal
+                faceData.push_back({posIndex, normIndex});
+            }
+            
+            // Triangulate quads and handle polygons
+            for (size_t i = 1; i < faceData.size() - 1; i++) {
+                for (int j = 0; j < 3; j++) {
+                    int idx = (j == 0) ? 0 : (j == 1) ? i : i + 1;
+                    int posIdx = faceData[idx].first;
+                    int normIdx = faceData[idx].second;
                     
-                    vertices.push_back(v);
-                    faceVertices.push_back(indices.size());
-                    indices.push_back(indices.size());
+                    if (posIdx >= 0 && posIdx < (int)positions.size()) {
+                        Vertex v;
+                        v.position = positions[posIdx];
+                        v.normal = (normIdx >= 0 && normIdx < (int)normals.size()) 
+                            ? normals[normIdx] 
+                            : glm::vec3(0.0f, 1.0f, 0.0f);
+                        
+                        vertices.push_back(v);
+                        indices.push_back(indices.size());
+                    }
                 }
             }
         }
@@ -198,15 +193,15 @@ int main()
     setupMesh(mesh);
 
     // Light position
-    glm::vec3 lightPos(2.0f, 2.0f, 2.0f);
+    glm::vec3 lightPos(2.0f, 3.0f, 4.0f);
     glm::vec3 viewPos(0.0f, 1.0f, 5.0f);
 
     // Material properties
     Material material;
-    material.ambient = glm::vec3(0.1f, 0.1f, 0.1f);
-    material.diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-    material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
-    material.shininess = 32.0f;
+    material.ambient = glm::vec3(0.3f, 0.3f, 0.3f);    // Stronger ambient
+    material.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);    // Full white diffuse
+    material.specular = glm::vec3(0.5f, 0.5f, 0.5f);   // Reduced specular
+    material.shininess = 16.0f;     
 
     // Main rendering loop
     while (!glfwWindowShouldClose(window)) {
