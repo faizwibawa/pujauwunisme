@@ -15,6 +15,7 @@ glm::vec3 cameraPos(0.0f, 1.0f, 5.0f);
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
+    glm::vec2 texCoords;
 };
 
 // Material structure
@@ -50,7 +51,7 @@ bool loadOBJ(const std::string& filePath, std::vector<Vertex>& vertices, std::ve
         std::cerr << "Failed to open OBJ file: " << filePath << std::endl;
         return false;
     }
-
+    std::vector<glm::vec2> texCoords;
     std::vector<glm::vec3> positions;
     std::vector<glm::vec3> normals;
 
@@ -72,26 +73,42 @@ bool loadOBJ(const std::string& filePath, std::vector<Vertex>& vertices, std::ve
             iss >> x >> y >> z;
             normals.push_back(glm::normalize(glm::vec3(x, y, z)));
         }
+        else if (type == "vt") {
+            float u, v;
+            iss >> u >> v;
+            texCoords.push_back(glm::vec2(u, v));
+        }
         else if (type == "f") {
-            std::vector<std::pair<int, int>> faceData; // (posIndex, normIndex)
+            struct FaceVertex {
+                int posIndex;
+                int texIndex;
+                int normIndex;
+            };
+
+            std::vector<FaceVertex> faceData;
             std::string vertex;
             
             while (iss >> vertex) {
-                int posIndex = 0, normIndex = 0;
-                sscanf(vertex.c_str(), "%d//%d", &posIndex, &normIndex);
-                
-                posIndex--;   // Convert to 0-based
+                int posIndex = 0;
+                int texIndex = 0;
+                int normIndex = 0;
+
+                sscanf(vertex.c_str(), "%d/%d/%d", &posIndex, &texIndex, &normIndex);
+
+                posIndex--;
+                texIndex--;
                 normIndex--;
-                
-                faceData.push_back({posIndex, normIndex});
+
+                faceData.push_back({posIndex, texIndex, normIndex});
             }
             
             // Triangulate quads and handle polygons
             for (size_t i = 1; i < faceData.size() - 1; i++) {
                 for (int j = 0; j < 3; j++) {
                     int idx = (j == 0) ? 0 : (j == 1) ? i : i + 1;
-                    int posIdx = faceData[idx].first;
-                    int normIdx = faceData[idx].second;
+                    int posIdx = faceData[idx].posIndex;
+                    int texIdx = faceData[idx].texIndex;
+                    int normIdx = faceData[idx].normIndex;
                     
                     if (posIdx >= 0 && posIdx < (int)positions.size()) {
                         Vertex v;
@@ -99,6 +116,9 @@ bool loadOBJ(const std::string& filePath, std::vector<Vertex>& vertices, std::ve
                         v.normal = (normIdx >= 0 && normIdx < (int)normals.size()) 
                             ? normals[normIdx] 
                             : glm::vec3(0.0f, 1.0f, 0.0f);
+                        v.texCoords = (texIdx >= 0 && texIdx < texCoords.size())
+                            ? texCoords[texIdx]
+                            : glm::vec2(0.0f);
                         
                         vertices.push_back(v);
                         indices.push_back(indices.size());
@@ -134,6 +154,16 @@ void setupMesh(Mesh& mesh)
     // Normal attribute
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(
+        2,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(Vertex),
+        (void*)offsetof(Vertex, texCoords)
+    );
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
