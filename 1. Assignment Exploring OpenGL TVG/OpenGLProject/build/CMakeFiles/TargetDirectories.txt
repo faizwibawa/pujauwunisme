@@ -1,0 +1,3 @@
+D:/Deseracht/Ens OpenGL/1. Assignment Exploring OpenGL TVG/OpenGLProject/build/CMakeFiles/MyOpenGLProject.dir
+D:/Deseracht/Ens OpenGL/1. Assignment Exploring OpenGL TVG/OpenGLProject/build/CMakeFiles/edit_cache.dir
+D:/Deseracht/Ens OpenGL/1. Assignment Exploring OpenGL TVG/OpenGLProject/build/CMakeFiles/rebuild_cache.dir
