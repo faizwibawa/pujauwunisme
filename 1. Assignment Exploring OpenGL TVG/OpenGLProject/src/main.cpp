@@ -15,6 +15,12 @@
 glm::vec3 cameraPos(0.0f, 1.0f, 5.0f);
 float rotationSpeed = 0.5f;
 float lookCam[3] = {0.0f,0.0f,0.0f};
+std::string textLoc[4] = {
+    "../models/mtl_chr1032_00_face_diffuse.png",
+    "../models/mtl_bdy1032_00_0_diffuse.png",
+    "../models/mtl_chr1032_00_eye_diffuse.png",
+    "../models/mtl_chr1032_00_hair_diffuse.png"
+};
 
 // Vertex structure
 struct Vertex {
@@ -174,6 +180,63 @@ void setupMesh(Mesh& mesh)
     glBindVertexArray(0);
 }
 
+GLuint loadTexture(const char* path)
+{
+    GLuint textureID;
+
+    glGenTextures(1, &textureID);
+
+    int width, height, nrChannels;
+
+    stbi_set_flip_vertically_on_load(true);
+
+    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        GLenum format = GL_RGB;
+
+        if (nrChannels == 1)
+            format = GL_RED;
+        else if (nrChannels == 3)
+            format = GL_RGB;
+        else if (nrChannels == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            format,
+            width,
+            height,
+            0,
+            format,
+            GL_UNSIGNED_BYTE,
+            data
+        );
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        std::cout << "Texture loaded successfully!\n";
+    }
+    else
+    {
+        std::cout << "Failed to load texture!\n";
+    }
+
+    stbi_image_free(data);
+
+    return textureID;
+}
+
 int main()
 {
     // Initialize GLFW
@@ -227,71 +290,73 @@ int main()
     mesh.indices = indices;
     setupMesh(mesh);
 
-    // =========================
-    // LOAD TEXTURE
-    // =========================
+    std::string textLoc[4] = {
+        "../models/mtl_chr1032_00_face_diffuse.png",
+        "../models/mtl_bdy1032_00_0_diffuse.png",
+        "../models/mtl_chr1032_00_eye_diffuse.png",
+        "../models/mtl_chr1032_00_hair_diffuse.png"
+    };
 
-    GLuint texture;
+    GLuint textures[4];
 
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glGenTextures(4, textures);
 
-    // Texture wrapping
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    // Texture filtering
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Flip texture vertically
-    stbi_set_flip_vertically_on_load(true);
-
-    int texWidth, texHeight, texChannels;
-
-    unsigned char* data = stbi_load(
-        "../models/mtl_chr1032_00_hair_diffuse.png",
-        &texWidth,
-        &texHeight,
-        &texChannels,
-        0
-    );
-
-    if (data)
+    for (int i = 0; i < 4; i++)
     {
-        GLenum format;
+        glBindTexture(GL_TEXTURE_2D, textures[i]);
 
-        if (texChannels == 4)
-            format = GL_RGBA;
-        else
-            format = GL_RGB;
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            format,
-            texWidth,
-            texHeight,
-            0,
-            format,
-            GL_UNSIGNED_BYTE,
-            data
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_set_flip_vertically_on_load(true);
+
+        int texWidth, texHeight, texChannels;
+
+        unsigned char* data = stbi_load(
+            textLoc[i].c_str(),
+            &texWidth,
+            &texHeight,
+            &texChannels,
+            0
         );
 
-        glGenerateMipmap(GL_TEXTURE_2D);
+        if (data)
+        {
+            GLenum format = GL_RGB;
 
-        std::cout << "Texture loaded successfully!" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Failed to load texture!" << std::endl;
-    }
+            if (texChannels == 4)
+                format = GL_RGBA;
 
-    stbi_image_free(data);
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                format,
+                texWidth,
+                texHeight,
+                0,
+                format,
+                GL_UNSIGNED_BYTE,
+                data
+            );
+
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            std::cout << "Loaded texture: " << textLoc[i] << std::endl;
+        }
+        else
+        {
+            std::cout << "Failed texture: " << textLoc[i] << std::endl;
+        }
+
+        stbi_image_free(data);
+    }
 
     // Light position
     glm::vec3 lightPos(2.0f, 3.0f, 4.0f);
-    glm::vec3 viewPos(0.0f, 1.0f, 5.0f);
+    glm::vec3 viewPos(5.0f, 1.0f, 1.0f);
 
     // Material properties
     Material material;
@@ -315,7 +380,7 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(15.0f));
-        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // Rotate on X axis
+        model = glm::rotate(model, glm::radians(00.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // Rotate on X axis
         model = glm::rotate(
             model,
             (float)glfwGetTime() * rotationSpeed,
@@ -324,7 +389,7 @@ int main()
         glm::mat4 view = glm::lookAt(
             cameraPos,                          // Camera position
             glm::vec3(lookCam[0], lookCam[1], lookCam[2]),    // Look at origin (where model is)
-            glm::vec3(0.0f, 1.0f, 0.0f)     // Up vector
+            glm::vec3(2.0f, 0.0f, 2.0f)     // Up vector
         );
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
@@ -360,13 +425,31 @@ int main()
 
         // Bind texture
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
 
         GLuint textureLoc = glGetUniformLocation(shaderProgram, "uTexture");
         glUniform1i(textureLoc, 0);
 
         // Render mesh
         glBindVertexArray(mesh.VAO);
+        glActiveTexture(GL_TEXTURE0);
+
+        int currentTexture = 0;
+
+        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+            currentTexture = 0;
+
+        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+            currentTexture = 1;
+
+        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+            currentTexture = 2;
+
+        if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+            currentTexture = 3;
+
+        glBindTexture(GL_TEXTURE_2D, textures[currentTexture]);
+
+        glUniform1i(glGetUniformLocation(shaderProgram, "uTexture"), 0);
         glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
