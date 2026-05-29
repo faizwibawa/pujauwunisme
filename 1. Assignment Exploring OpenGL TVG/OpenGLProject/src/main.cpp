@@ -12,6 +12,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+bool enablePhong = true;
+glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f);
+
 glm::vec3 cameraPos(0.0f, 1.0f, 5.0f);
 float rotationSpeed = 0.5f;
 float lookCam[3] = {0.0f,0.0f,0.0f};
@@ -384,7 +387,7 @@ int main()
         model = glm::rotate(
             model,
             (float)glfwGetTime() * rotationSpeed,
-            glm::vec3(0.0f, 1.0f, 0.0f)
+            rotationAxis
         );
         glm::mat4 view = glm::lookAt(
             cameraPos,                          // Camera position
@@ -449,7 +452,10 @@ int main()
 
         glBindTexture(GL_TEXTURE_2D, textures[currentTexture]);
 
-        glUniform1i(glGetUniformLocation(shaderProgram, "uTexture"), 0);
+        glUniform1i(
+            glGetUniformLocation(shaderProgram, "uEnablePhong"),
+            enablePhong
+        );
         glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
@@ -475,11 +481,28 @@ void processInput(GLFWwindow* window)
 {
     extern glm::vec3 cameraPos;
     extern float rotationSpeed;
+    extern glm::vec3 rotationAxis;
+    extern bool enablePhong;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     float speed = 0.01f;
+
+    if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
+        enablePhong = true;
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+        enablePhong = false;
+
+    // Rotation axis controls
+    if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+        rotationAxis = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+        rotationAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+        rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f);
 
     // Camera movement
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
