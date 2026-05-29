@@ -5,6 +5,9 @@ in vec3 Normal;
 
 uniform vec3 uViewPos;
 uniform vec3 uLightPos;
+in vec2 TexCoords;
+
+uniform sampler2D uTexture;
 
 // Material properties
 uniform vec3 uObjectColor;
@@ -17,14 +20,16 @@ out vec4 FragColor;
 
 void main()
 {
+    vec3 texColor = texture(uTexture, TexCoords).rgb;
+
     // Ambient
-    vec3 ambient = uAmbient * uObjectColor;
+    vec3 ambient = uAmbient * texColor;
 
     // Diffuse
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(uLightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = uDiffuse * diff * uObjectColor;
+    vec3 diffuse = uDiffuse * diff * texColor;
 
     // Specular
     vec3 viewDir = normalize(uViewPos - FragPos);

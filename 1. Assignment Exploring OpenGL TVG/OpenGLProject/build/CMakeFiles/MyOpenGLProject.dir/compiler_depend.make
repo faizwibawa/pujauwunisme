@@ -357,6 +357,7 @@ CMakeFiles/MyOpenGLProject.dir/src/main.cpp.obj: D:/Deseracht/Ens\ OpenGL/1.\ As
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/istream \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/limits \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/map \
+  C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/math.h \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/new \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/optional \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/ostream \
@@ -399,14 +400,20 @@ CMakeFiles/MyOpenGLProject.dir/src/main.cpp.obj: D:/Deseracht/Ens\ OpenGL/1.\ As
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/x86_64-w64-mingw32/bits/gthr-default.h \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/x86_64-w64-mingw32/bits/gthr.h \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/x86_64-w64-mingw32/bits/os_defines.h \
+  C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/emmintrin.h \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/float.h \
+  C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/mm_malloc.h \
+  C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/mmintrin.h \
+  C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/stdarg.h \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/stddef.h \
   C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/stdint.h \
+  C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/xmmintrin.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/_mingw.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/_mingw_mac.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/_mingw_off_t.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/_mingw_secapi.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/_mingw_stat64.h \
+  C:/TDM-GCC-64/x86_64-w64-mingw32/include/_mingw_stdarg.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/assert.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/corecrt.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/corecrt_startup.h \
@@ -432,6 +439,7 @@ CMakeFiles/MyOpenGLProject.dir/src/main.cpp.obj: D:/Deseracht/Ens\ OpenGL/1.\ As
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/sec_api/sys/timeb_s.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/sec_api/wchar_s.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/signal.h \
+  C:/TDM-GCC-64/x86_64-w64-mingw32/include/stdarg.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/stddef.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/stdint.h \
   C:/TDM-GCC-64/x86_64-w64-mingw32/include/stdio.h \
@@ -627,7 +635,8 @@ CMakeFiles/MyOpenGLProject.dir/src/main.cpp.obj: D:/Deseracht/Ens\ OpenGL/1.\ As
   D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/vec2.hpp \
   D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/vec3.hpp \
   D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/vec4.hpp \
-  D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/vector_relational.hpp
+  D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/vector_relational.hpp \
+  D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/OpenGLProject/src/stb_image.h
 
 
 C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/avx512vpopcntdqvlintrin.h:
@@ -677,6 +686,8 @@ C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/avx512vp2intersectvlintr
 C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/avx512bf16intrin.h:
 
 C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/avx512ifmavlintrin.h:
+
+C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/math.h:
 
 C:/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/avx512cdintrin.h:
 
@@ -1720,9 +1731,9 @@ D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/ext/matr
 
 D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/ext/matrix_transform.hpp:
 
-D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/ext/quaternion_double.hpp:
-
 D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/ext/quaternion_float_precision.hpp:
+
+D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/ext/quaternion_double.hpp:
 
 D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/ext/quaternion_geometric.hpp:
 
@@ -1825,3 +1836,5 @@ D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/packing.
 D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/simd/platform.h:
 
 D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/glm/glm/vec4.hpp:
+
+D:/Deseracht/Ens\ OpenGL/1.\ Assignment\ Exploring\ OpenGL\ TVG/OpenGLProject/src/stb_image.h:

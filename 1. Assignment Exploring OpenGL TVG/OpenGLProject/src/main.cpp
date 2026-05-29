@@ -9,7 +9,12 @@
 #include <sstream>
 #include <map>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 glm::vec3 cameraPos(0.0f, 1.0f, 5.0f);
+float rotationSpeed = 0.5f;
+float lookCam[3] = {0.0f,0.0f,0.0f};
 
 // Vertex structure
 struct Vertex {
@@ -222,6 +227,68 @@ int main()
     mesh.indices = indices;
     setupMesh(mesh);
 
+    // =========================
+    // LOAD TEXTURE
+    // =========================
+
+    GLuint texture;
+
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Texture wrapping
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Texture filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Flip texture vertically
+    stbi_set_flip_vertically_on_load(true);
+
+    int texWidth, texHeight, texChannels;
+
+    unsigned char* data = stbi_load(
+        "../models/mtl_chr1032_00_hair_diffuse.png",
+        &texWidth,
+        &texHeight,
+        &texChannels,
+        0
+    );
+
+    if (data)
+    {
+        GLenum format;
+
+        if (texChannels == 4)
+            format = GL_RGBA;
+        else
+            format = GL_RGB;
+
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            format,
+            texWidth,
+            texHeight,
+            0,
+            format,
+            GL_UNSIGNED_BYTE,
+            data
+        );
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        std::cout << "Texture loaded successfully!" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Failed to load texture!" << std::endl;
+    }
+
+    stbi_image_free(data);
+
     // Light position
     glm::vec3 lightPos(2.0f, 3.0f, 4.0f);
     glm::vec3 viewPos(0.0f, 1.0f, 5.0f);
@@ -247,12 +314,16 @@ int main()
         // Set up matrices
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+        model = glm::scale(model, glm::vec3(15.0f));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // Rotate on X axis
-        model = glm::rotate(model, (float)glfwGetTime() * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::rotate(
+            model,
+            (float)glfwGetTime() * rotationSpeed,
+            glm::vec3(0.0f, 1.0f, 0.0f)
+        );
         glm::mat4 view = glm::lookAt(
             cameraPos,                          // Camera position
-            glm::vec3(0.0f, 0.0f, 0.0f),    // Look at origin (where model is)
+            glm::vec3(lookCam[0], lookCam[1], lookCam[2]),    // Look at origin (where model is)
             glm::vec3(0.0f, 1.0f, 0.0f)     // Up vector
         );
 
@@ -287,6 +358,13 @@ int main()
         glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
         glUniform3f(viewPosLoc, viewPos.x, viewPos.y, viewPos.z);
 
+        // Bind texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        GLuint textureLoc = glGetUniformLocation(shaderProgram, "uTexture");
+        glUniform1i(textureLoc, 0);
+
         // Render mesh
         glBindVertexArray(mesh.VAO);
         glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
@@ -313,11 +391,14 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void processInput(GLFWwindow* window)
 {
     extern glm::vec3 cameraPos;
-    
+    extern float rotationSpeed;
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    
+
     float speed = 0.01f;
+
+    // Camera movement
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos.z -= speed;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -330,6 +411,30 @@ void processInput(GLFWwindow* window)
         cameraPos.y -= speed;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         cameraPos.y += speed;
+
+    // Camera movement
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+        lookCam[0] -= 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        lookCam[0] += 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        lookCam[1] -= 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+        lookCam[1] += 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+        lookCam[2] -= 0.01f;
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+        lookCam[2] += 0.01f;
+
+    // Rotation controls
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        rotationSpeed = 0.0f;
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        rotationSpeed = 2.0f;
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+        rotationSpeed = 0.2f;
+    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
+        rotationSpeed = 0.5f;
 }
 
 std::string readShaderFile(const std::string& filePath)
